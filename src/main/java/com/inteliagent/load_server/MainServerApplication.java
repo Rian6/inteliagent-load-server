@@ -1,4 +1,4 @@
-package com.inteliagent.main_server;
+package com.inteliagent.load_server;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
