@@ -57,10 +57,10 @@ public class SyncService {
     private List<ConsumerLoads> getConsumerLoads(List<SyncTables> syncTablesList, String horaInicioProcesso, int idUsuario, boolean loadFull){
         return syncTablesList.stream().map(syncTables -> {
             try {
-                String horaUltimoSincronismo = "0000-00-00 00:00";
+                String horaUltimoSincronismo = "2000-11-01 10:15:16";
                 if(!loadFull){
                     horaUltimoSincronismo = syncPersistence.getHoraUltimoSincronismo(syncTables.getTableName(), idUsuario);
-                    horaUltimoSincronismo = horaUltimoSincronismo == null ? "0000-00-00 00:00" : horaUltimoSincronismo;
+                    horaUltimoSincronismo = horaUltimoSincronismo == null ? "2000-11-01 10:15:16" : horaUltimoSincronismo;
                 }
 
                 String rotina = formatarRotina(syncTables.getRotina(), horaUltimoSincronismo, horaInicioProcesso);
@@ -69,8 +69,8 @@ public class SyncService {
                     ConsumerLoads consumerLoads = new ConsumerLoads();
 
                     consumerLoads.setTableName(syncTables.getTableName());
-                    consumerLoads.setCabecalho(rotinaDados.getFirst());
-                    rotinaDados.removeFirst();
+                    consumerLoads.setCabecalho(rotinaDados.get(0));
+                    rotinaDados.remove(0);
 
                     StringBuilder registros = new StringBuilder();
                     rotinaDados.forEach(data -> registros.append(data).append(", "));
