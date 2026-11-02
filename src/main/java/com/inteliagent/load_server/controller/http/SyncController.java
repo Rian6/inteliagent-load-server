@@ -1,54 +1,16 @@
 package com.inteliagent.load_server.controller.http;
-
-
-import com.inteliagent.load_server.entity.ConfirmLoads;
-import com.inteliagent.load_server.entity.Consumer;
-import com.inteliagent.load_server.entity.Sync;
+import java.util.*;
+import com.inteliagent.load_server.entity.*;
 import com.inteliagent.load_server.service.SyncService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import com.inteliagent.load_server.service.SyncDownloadService;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.util.List;
-
 @RestController
 @RequestMapping("/api")
 public class SyncController {
-
-    @Autowired
-    private SyncService syncService;
-
-    @PostMapping("/sync")
-    public ResponseEntity<?> sync(@RequestBody List<Sync> syncList) {
-        try {
-            ConfirmLoads confirmLoads = syncService.sync(syncList);
-            return ResponseEntity.created(new URI("")).body(confirmLoads);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Erro ao syncronizar cargas: " + e.getMessage());
-        }
-    }
-    @GetMapping("/consumer/{idUsuario}")
-    public ResponseEntity<?> consumer(
-            @PathVariable int idUsuario,
-            @RequestParam Boolean isLoadFull) {
-        try {
-            Consumer consumerEntities = syncService.consumer(idUsuario, isLoadFull);
-            return ResponseEntity.created(new URI("")).body(consumerEntities);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Erro ao sincronizar cargas: " + e.getMessage());
-        }
-    }
-    @PostMapping("/consumer-confirm/{idUsuario}")
-    public ResponseEntity<?> consumerConfirm(
-            @PathVariable int idUsuario,
-            @RequestParam String dataHora,
-            @RequestBody List<String> tables) {
-        try {
-            syncService.consumerConfirm(tables, dataHora, idUsuario);
-            return ResponseEntity.ok("");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Erro ao sincronizar cargas: " + e.getMessage());
-        }
-    }
+    private final SyncService service;
+    private final SyncDownloadService downloads;
+    public SyncController(SyncService service, SyncDownloadService downloads) { this.service = service; this.downloads = downloads; }
+    @PostMapping("/sync") public ConfirmLoads sync(@RequestBody List<Sync> batch) { return service.sync(batch); }
+    @GetMapping("/consumer/{idUsuario}") public Map<String, Object> consumer(@PathVariable int idUsuario, @RequestParam(defaultValue="false") boolean isLoadFull, @RequestParam(defaultValue="0") int offset, @RequestParam(defaultValue="") String downloadId, @RequestParam(defaultValue="00000000-0000-0000-0000-000000000000") String clientId) { return downloads.consumer(idUsuario, isLoadFull, offset, downloadId, clientId); }
+    @PostMapping("/consumer-confirm/{idUsuario}") public void confirm(@PathVariable int idUsuario, @RequestParam String downloadId, @RequestBody List<String> tables) { downloads.consumerConfirm(tables, downloadId, idUsuario); }
 }

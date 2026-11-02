@@ -1,30 +1,18 @@
-# Inteliagent Load Server
+# Inteliagent load-server
 
-O **Inteliagent Load Server** é um servidor desenvolvido com **Spring Boot** que se conecta a um banco de dados para buscar informações de cargas e as envia para dispositivos móveis. Este projeto foi projetado para permitir a sincronização eficiente de dados em tempo real, garantindo alta disponibilidade e baixo tempo de resposta.
+Sincronização v3: operações idempotentes, versões para detecção de conflitos, cursores por dispositivo, JSON tipado, listas de tabelas/colunas permitidas, transações, paginação e watermarks controlados pelo servidor.
 
-![arquitetura](https://github.com/user-attachments/assets/15c2d25d-0d54-44a9-9e95-27b0a8cb384c)
+Java 21 e Spring Boot 4.1.2. O Maven Wrapper usa Maven 3.9.16 com checksum de distribuição.
 
-## Funcionalidades
+## Executar
 
-- Conexão com banco de dados para recuperar informações de cargas.
-- API RESTful para expor os dados das cargas.
-- Sincronização de dados entre o servidor e dispositivos móveis.
+Configure as variáveis descritas em `.env.example` no processo. Spring Boot não carrega arquivos `.env` automaticamente. O ambiente integrado é iniciado por `runtime.py` na raiz do workspace e fornece credenciais independentes por serviço.
 
-## Requisitos
+```powershell
+.\mvnw.cmd package
+java -jar target/load-server-0.0.1-SNAPSHOT.jar
+```
 
-- **Java 11** ou superior.
-- **Maven** para gerenciamento de dependências.
-- Banco de dados relacional (MySQL, PostgreSQL, etc.).
+Os testes de contexto precisam de um MySQL de teste configurado por `DB_URL`, `DB_USER` e `DB_PASSWORD` e uma chave JWT em Base64 em `JWT_SECRET`. Execute as migrações antes dos serviços. O workspace usa a porta 3308 para não alterar bancos existentes.
 
-## Estrutura do Projeto
-
-- **src/main/java**: Código-fonte do servidor.
-- **src/main/resources**: Configurações do servidor.
-
-## Como Rodar o Projeto
-
-1. **Clone o repositório:**
-   
-   ```bash
-   git clone https://github.com/seu-usuario/inteliagent-load-server.git
-   cd inteliagent-load-server
+Controllers, serviços e persistência usam limites explícitos e injeção por construtor. Consulte os contratos e a arquitetura em `../docs/` no workspace integrado.
