@@ -45,3 +45,12 @@ build/
 !.env.example
 
 *.log
+
+# Private runtime and generated reports
+.env
+.env.*
+!.env.example
+*.log
+audit.json
+*.keystore
+*.jks
